@@ -22,7 +22,7 @@ jobs:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
     - run: |
-        docker build . --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-functions:latest
+        docker build . --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" -t ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
         docker push ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
 
   build-frontend-and-deploy:

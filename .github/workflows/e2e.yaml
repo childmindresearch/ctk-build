@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       api:
-        image: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
+        image: cliniciantoolkit.azurecr.io/ctk-functions:latest
         credentials:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}

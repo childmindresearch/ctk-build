@@ -32,6 +32,7 @@ jobs:
         AZURE_OPENAI_LLM_DEPLOYMENT=unused
         AZURE_OPENAI_ENDPOINT=unusued
         LANGUAGE_TOOL_URL=http://localhost:8010/v2
+        REDCAP_API_TOKEN=unused
     languagetool:
       image: erikvl87/languagetool:6.5
       ports:

@@ -1,6 +1,7 @@
 name: End-to-End Tests
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["Build and Deploy Images"]
     types:

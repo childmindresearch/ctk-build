@@ -1,0 +1,73 @@
+name: End-to-End Tests
+
+on:
+  workflow_run:
+    workflows: ["Build and Deploy Images"]
+    types:
+      - completed
+
+environment:
+  POSTGRES_HOST: localhost
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: password
+  POSTGRES_DB: ctk
+  POSTGRES_PORT: 5432
+  POSTGRES_SSL: false
+  DEVELOPMENT_USER: development.user.admin@example.com
+  AZURE_FUNCTION_PYTHON_URL: http://localhost:8000
+
+jobs:
+  services:
+    api:
+      image: cliniciantoolkit.azurecr.io/ctk-functions:latest
+      credentials:
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+      ports:
+        - 8000:8000
+      environment:
+        AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AZURE_OPENAI_API_KY=unused
+        AZURE_OPENAI_LLM_DEPLOYMENT=unused
+        AZURE_OPENAI_ENDPOINT=unusued
+        LANGUAGE_TOOL_URL=http://localhost:8010/v2
+    languagetool:
+      image: erikvl87/languagetool:6.5
+      ports:
+        - 8010:8010
+    postgres:
+      image: postgres
+      ports:
+        - 5432:5432
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+      volumes:
+        ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    steps:
+      - name: Checkout Frontend
+        uses: actions/checkout@main
+        with:
+          repository: childmindresearch/ctk-webapp
+
+      - name: Install dependencies
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.4.x
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        run: |
+          npm install --legacy-peer-deps
+      - name: Run tests
+        run: |
+          npm run test:integration
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: video-files
+          path: test-results/**/*.webm
+
+

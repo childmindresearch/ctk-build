@@ -1,4 +1,4 @@
-name: Build API
+name: Build and Deploy Images
 
 on:
   workflow_dispatch:
@@ -6,10 +6,39 @@ on:
     types: [dependency_updated]
 
 jobs:
-  services:
-    languagetool:
-      image: erikvl87/languagetool:6.5
-      ports:
-        - 8010:8010
-    api:
+  build-api-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
 
+    - name: Checkout GitHub Action
+      uses: actions/checkout@main
+      with:
+        repository: childmindresearch/ctk-functions
+
+    - name: Build and push image
+      uses: azure/docker-login@v2
+      with:
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - run: |
+        docker build . --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-functions:latest
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-functions:latest
+
+  build-frontend-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+        with:
+          repository: childmindresearch/ctk-webapp
+
+      - name: Build and push image
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-webapp:latest
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-functions:latest

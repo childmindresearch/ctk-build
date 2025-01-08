@@ -19,7 +19,7 @@ environment:
 jobs:
   services:
     api:
-      image: cliniciantoolkit.azurecr.io/ctk-functions:latest
+      image: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
       credentials:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}

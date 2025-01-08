@@ -18,12 +18,12 @@ jobs:
     - name: Build and push image
       uses: azure/docker-login@v2
       with:
-        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        login-server: ${{ secrets.ACR_LOGIN_SERVER }}
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
         docker build . --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-functions:latest
-        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-functions:latest
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
 
   build-frontend-and-deploy:
     runs-on: ubuntu-latest
@@ -36,9 +36,9 @@ jobs:
       - name: Build and push image
         uses: azure/docker-login@v2
         with:
-          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
       - run: |
-          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-webapp:latest
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/ctk-functions:latest
+          docker build . -t ${{ secrets.ACR_LOGIN_SERVER }}/ctk-webapp:latest
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/ctk-webapp:latest

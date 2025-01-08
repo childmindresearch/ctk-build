@@ -6,7 +6,7 @@ on:
     types:
       - completed
 
-environment:
+env:
   POSTGRES_HOST: localhost
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: password
@@ -29,14 +29,14 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
         ports:
           - 8000:8000
-        environment:
-          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AZURE_OPENAI_API_KY=unused
-          AZURE_OPENAI_LLM_DEPLOYMENT=unused
-          AZURE_OPENAI_ENDPOINT=unusued
-          LANGUAGE_TOOL_URL=http://localhost:8010/v2
-          REDCAP_API_TOKEN=unused
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AZURE_OPENAI_API_KEY: unused
+          AZURE_OPENAI_LLM_DEPLOYMENT: unused
+          AZURE_OPENAI_ENDPOINT: unusued
+          LANGUAGE_TOOL_URL: http://localhost:8010/v2
+          REDCAP_API_TOKEN: unused
       languagetool:
         image: erikvl87/languagetool:6.5
         ports:
@@ -45,11 +45,11 @@ jobs:
         image: postgres
         ports:
           - 5432:5432
-        environment:
+        env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
         volumes:
-          ./init.sql:/docker-entrypoint-initdb.d/init.sql
+          - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
     steps:
       - name: Checkout Frontend

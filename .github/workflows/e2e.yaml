@@ -47,8 +47,8 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
+          POSTGRES_USER: ${{ POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ POSTGRES_PASSWORD }}
         volumes:
           - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 

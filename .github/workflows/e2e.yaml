@@ -62,7 +62,8 @@ jobs:
         with:
           repository: childmindresearch/ctk-webapp
       - name: Test LanguageTool
-        run: curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' --header 'Accept: application/json' -d 'text=Hello%20%2C%20world&#33;&language=en-US&enabledOnly=false' 'http://localhost:8010/v2/check'
+        run: |
+          curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' --header 'Accept: application/json' -d 'text=Hello%20%2C%20world&#33;&language=en-US&enabledOnly=false' 'http://localhost:8010/v2/check'
 
       - name: Initialize PostgreSQL
         env:

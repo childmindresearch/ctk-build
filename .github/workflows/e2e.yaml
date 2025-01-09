@@ -50,8 +50,6 @@ jobs:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        volumes:
-          - ${{ github.workspace }}/init.sql:/docker-entrypoint-initdb.d/init.sql
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -63,6 +61,14 @@ jobs:
         uses: actions/checkout@main
         with:
           repository: childmindresearch/ctk-webapp
+
+      - name: Initialize PostgreSQL
+        env:
+          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        run: |
+          psql -h localhost -U ${POSTGRES_USER} -d ctk << 'EOSQL'
+            $(cat ./e2e/init.sql)
+          EOSQL
 
       - name: Setup Node
         uses: actions/setup-node@v4

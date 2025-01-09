@@ -1,4 +1,4 @@
-name: Build and Deploy Images
+name: Build Images
 
 on:
   workflow_dispatch:
@@ -6,7 +6,8 @@ on:
     types: [dependency_updated]
 
 jobs:
-  build-api-and-deploy:
+  build-api:
+    if: ${{ github.event.client_payload.triggered_by == "childmindresearch/ctk-functions, on push event" }} 
     runs-on: ubuntu-latest
     steps:
 
@@ -25,7 +26,8 @@ jobs:
         docker build . --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" -t ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
         docker push ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
 
-  build-frontend-and-deploy:
+  build-frontend:
+    if: ${{ github.event.client_payload.triggered_by == "childmindresearch/ctk-webapp, on push event" }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub Action

@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-api:
-    if: ${{ github.event.client_payload.triggered_by == "childmindresearch/ctk-functions, on push event" }} 
+    if: ${{ github.event.client_payload.triggered_by == 'childmindresearch/ctk-functions, on push event' }} 
     runs-on: ubuntu-latest
     steps:
 
@@ -27,7 +27,7 @@ jobs:
         docker push ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
 
   build-frontend:
-    if: ${{ github.event.client_payload.triggered_by == "childmindresearch/ctk-webapp, on push event" }}
+    if: ${{ github.event.client_payload.triggered_by == 'childmindresearch/ctk-webapp, on push event' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub Action
@@ -46,7 +46,7 @@ jobs:
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/ctk-webapp:latest
 
   build-cloai-service:
-    if: ${{ github.event.client_payload.triggered_by == "childmindresearch/cloai-service, on push event" }}
+    if: ${{ github.event.client_payload.triggered_by == 'childmindresearch/cloai-service, on push event' }}
     runs-on: ubuntu-latest
     steps:
 

@@ -44,3 +44,24 @@ jobs:
       - run: |
           docker build . -t ${{ secrets.ACR_LOGIN_SERVER }}/ctk-webapp:latest
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/ctk-webapp:latest
+
+  build-cloai-service:
+    if: ${{ github.event.client_payload.triggered_by == "childmindresearch/ctk-functions, on push event" }}
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout GitHub Action
+      uses: actions/checkout@main
+      with:
+        repository: childmindresearch/cloai-service
+
+    - name: Build and push image
+      uses: azure/docker-login@v2
+      with:
+        login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+    - run: |
+        docker build . --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" -t ${{ secrets.ACR_LOGIN_SERVER }}/cloai-service:latest
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/cloai-service:latest
+

@@ -48,11 +48,6 @@ jobs:
           - 8001:8000
         env:
           CONFIG_JSON: '{"clients":{"sonnet-3.5-v2": { "type": "anthropic", "model": "anthropic.claude-3-5-sonnet-20241022-v2:0", "aws_access_key": ${{ secrets.AWS_ACCESS_KEY_ID }}, "aws_secret_key": ${{ secrets.AWS_SECRET_ACCESS_KEY }}, "region": "us-west-2"}}}'
-        options: >-
-          --health-cmd "curl -f http://0.0.0.0:8001/v1/health || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
       languagetool:
         image: erikvl87/languagetool:6.5
         ports:

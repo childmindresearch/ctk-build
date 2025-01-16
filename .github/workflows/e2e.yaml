@@ -30,13 +30,8 @@ jobs:
         ports:
           - 8000:8000
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           CLOAI_SERVICE_URL: http://cloai-service:8001/v1
           CLOAI_MODEL: sonnet-3.5-v2
-          AZURE_OPENAI_API_KEY: unused
-          AZURE_OPENAI_LLM_DEPLOYMENT: unused
-          AZURE_OPENAI_ENDPOINT: unusued
           LANGUAGE_TOOL_URL: http://languagetool:8010/v2
           REDCAP_API_TOKEN: unused
       cloai-service:

@@ -145,6 +145,8 @@ jobs:
         uses: azure/container-apps-deploy-action@v1
         with:
           acrName: ${{ secrets.ACR_LOGIN_SERVER }}
+          acrUsername: ${{ secrets.ACR_USERNAME }}
+          acrPassword: ${{ secrets.ACR_PASSWORD }}
           imageToDeploy: ctk-functions:latest
           containerAppName: ca-ctk-functions-py
           resourceGroup: ClinicianToolkit

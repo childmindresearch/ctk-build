@@ -30,6 +30,9 @@ jobs:
         with:
           repository: childmindresearch/${{ env.REPO_NAME }}
 
+      - name: Get SHA
+        run: echo "SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
       - name: Build and push image
         uses: azure/docker-login@v2
         with:
@@ -40,9 +43,14 @@ jobs:
       - name: Build and push Docker image
         run: |
           if [ "${{ env.REPO_NAME }}" = "ctk-functions" ]; then
-            docker build . --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+            docker build . \
+              --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" \
+              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest \
+              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:sha-${{ env.SHA }}
           else
-            docker build . -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+            docker build . \
+              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest \
+              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:sha-${{ env.SHA }}
           fi
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
 
@@ -136,14 +144,41 @@ jobs:
     needs: e2e
     runs-on: ubuntu-latest
     steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get latest SHA tags
+        run: |
+          az acr login --name ${{ secrets.ACR_LOGIN_SERVER }}
+          
+          get_latest_sha() {
+            local repo=$1
+            az acr repository show-tags \
+              --name ${{ secrets.ACR_LOGIN_SERVER }} \
+              --repository $repo \
+              --orderby time_desc \
+              --query "[?contains(@, 'sha-')]|[0]"
+          }
+          
+          CTK_FUNCTIONS_SHA=$(get_latest_sha "ctk-functions")
+          CTK_WEBAPP_SHA=$(get_latest_sha "ctk-webapp")
+          CLOAI_SERVICE_SHA=$(get_latest_sha "cloai-service")
+          
+          echo "CTK_FUNCTIONS_SHA=$CTK_FUNCTIONS_SHA" >> $GITHUB_ENV
+          echo "CTK_WEBAPP_SHA=$CTK_WEBAPP_SHA" >> $GITHUB_ENV
+          echo "CLOAI_SERVICE_SHA=$CLOAI_SERVICE_SHA" >> $GITHUB_ENV
+
       - name: Deploy CTK-Functions
         uses: azure/container-apps-deploy-action@v1
         with:
-          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:${{ env.CTK_FUNCTIONS_SHA }}
           containerAppName: ca-ctk-functions-py
           containerAppEnvironment: cae-ctk
           resourceGroup: ClinicianToolkit
           azureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
           disableTelemetry: 'true'
+
 
 

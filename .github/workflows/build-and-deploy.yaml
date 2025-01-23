@@ -136,19 +136,14 @@ jobs:
     needs: e2e
     runs-on: ubuntu-latest
     steps:
-      - name: Log in to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Deploy CTK-Functions
         uses: azure/container-apps-deploy-action@v1
         with:
-          acrName: ${{ secrets.ACR_LOGIN_SERVER }}
-          acrUsername: ${{ secrets.ACR_USERNAME }}
-          acrPassword: ${{ secrets.ACR_PASSWORD }}
-          imageToDeploy: ctk-functions:latest
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:latest
           containerAppName: ca-ctk-functions-py
+          containerAppEnvironment: cae-ctk
           resourceGroup: ClinicianToolkit
+          azureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+          disableTelemetry: 'true'
 
 

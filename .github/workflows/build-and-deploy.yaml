@@ -1,11 +1,9 @@
-name: End-to-End Tests
+name: Build, e2e, and deploy
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Build Images"]
-    types:
-      - completed
+  repository_dispatch:
+    types: [dependency_updated]
 
 env:
   POSTGRES_HOST: localhost
@@ -19,7 +17,37 @@ env:
 
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set repository name
+        run: |
+          REPO_NAME=$(echo "${{ github.event.client_payload.triggered_by }}" | cut -d'/' -f2 | cut -d',' -f1)
+          echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
+
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+        with:
+          repository: childmindresearch/${{ env.REPO_NAME }}
+
+      - name: Build and push image
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          if [ "${{ env.REPO_NAME }}" = "ctk-functions" ]; then
+            docker build . --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+          else
+            docker build . -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+          fi
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+
   e2e:
+    needs: build
     runs-on: ubuntu-latest
     services:
       api:
@@ -104,5 +132,21 @@ jobs:
         with:
           name: video-files
           path: test-results/**/*.webm
+  deploy:
+    needs: e2e
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy CTK-Functions
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: ${{ secrets.ACR_LOGIN_SERVER }}
+          imageToDeploy: ctk-functions:latest
+          containerAppName: ca-ctk-functions-py
+          resourceGroup: ClinicianToolkit
 
 

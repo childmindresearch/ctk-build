@@ -45,11 +45,11 @@ jobs:
           if [ "${{ env.REPO_NAME }}" = "ctk-functions" ]; then
             docker build . \
               --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" \
-              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest \
               -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:sha-${{ env.SHA }}
           else
             docker build . \
-              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest \
               -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:sha-${{ env.SHA }}
           fi
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest

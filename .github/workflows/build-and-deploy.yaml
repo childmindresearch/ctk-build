@@ -182,5 +182,28 @@ jobs:
           azureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
           disableTelemetry: 'true'
 
+      - name: Deploy CTK-Webapp
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-webapp:${{ env.CTK_WEBAPP_SHA }}
+          containerAppName: ca-ctk-webapp
+          containerAppEnvironment: cae-ctk
+          resourceGroup: ClinicianToolkit
+          azureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+          disableTelemetry: 'true'
+
+      - name: Deploy cloai-service
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-cloai-service:${{ env.CLOAI_SERVICE_SHA }}
+          containerAppName: ca-cloai-service
+          containerAppEnvironment: cae-ctk
+          resourceGroup: ClinicianToolkit
+          azureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+          disableTelemetry: 'true'
+
+
+
+
 
 

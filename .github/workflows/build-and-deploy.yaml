@@ -195,7 +195,7 @@ jobs:
       - name: Deploy cloai-service
         uses: azure/container-apps-deploy-action@v1
         with:
-          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-cloai-service:${{ env.CLOAI_SERVICE_SHA }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/cloai-service:${{ env.CLOAI_SERVICE_SHA }}
           containerAppName: ca-cloai-service
           containerAppEnvironment: cae-ctk
           resourceGroup: ClinicianToolkit

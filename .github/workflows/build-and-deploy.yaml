@@ -2,6 +2,10 @@ name: Build, e2e, and deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      repository: 
+        required: true
+        
   repository_dispatch:
     types: [dependency_updated]
 
@@ -22,7 +26,11 @@ jobs:
     steps:
       - name: Set repository name
         run: |
-          REPO_NAME=$(echo "${{ github.event.client_payload.triggered_by }}" | cut -d'/' -f2 | cut -d',' -f1)
+          if [[ -n "${{ github.event.client_payload.triggered_by }}" ]]; then
+            REPO_NAME=$(echo "${{ github.event.client_payload.triggered_by }}" | cut -d'/' -f2 | cut -d',' -f1)
+          else
+            REPO_NAME=${{ github.event.inputs.repository }}
+          fi
           echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
 
       - name: Checkout GitHub Action

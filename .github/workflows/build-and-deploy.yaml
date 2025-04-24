@@ -82,7 +82,7 @@ jobs:
           POSTGRES_USER: unused
           POSTGRES_PASSWORD: unused
           POSTGRES_DATABASE: unused
-          POSTGRES_PORT: unused
+          POSTGRES_PORT: 5432
           POSTGRES_HOST: unused
       cloai-service:
         image: cliniciantoolkit.azurecr.io/cloai-service:latest

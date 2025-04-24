@@ -71,6 +71,11 @@ jobs:
           CLOAI_MODEL: sonnet-3.5-v2
           LANGUAGE_TOOL_URL: http://languagetool:8010/v2
           REDCAP_API_TOKEN: unused
+          POSTGRES_USER: unused
+          POSTGRES_PASSWORD: unused
+          POSTGRES_DATABASE: unused
+          POSTGRES_PORT: unused
+          POSTGRES_HOST: unused
       cloai-service:
         image: cliniciantoolkit.azurecr.io/cloai-service:latest
         credentials:

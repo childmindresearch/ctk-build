@@ -132,7 +132,7 @@ jobs:
       - name: Initialize PostgreSQL
         env:
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        run: psql -h localhost -U ${POSTGRES_USER} -d ctk -f ./e2e/init.sql
+        run: psql -h localhost -U ${POSTGRES_USER} -d ctk -f ./e2e/init.psql
 
       - name: Setup Node
         uses: actions/setup-node@v4

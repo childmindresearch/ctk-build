@@ -44,7 +44,7 @@ jobs:
         run: echo "SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Build and push image
-        uses: azure/docker-login@v2
+        uses: azure/docker-login@15c4aadf093404726ab2ff205b2cdd33fa6d054c
         with:
           login-server: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
@@ -162,7 +162,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 

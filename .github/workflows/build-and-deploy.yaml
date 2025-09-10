@@ -2,6 +2,10 @@ name: Build, e2e, and deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      repository: 
+        required: true
+        
   repository_dispatch:
     types: [dependency_updated]
 
@@ -22,7 +26,11 @@ jobs:
     steps:
       - name: Set repository name
         run: |
-          REPO_NAME=$(echo "${{ github.event.client_payload.triggered_by }}" | cut -d'/' -f2 | cut -d',' -f1)
+          if [[ -n "${{ github.event.client_payload.triggered_by }}" ]]; then
+            REPO_NAME=$(echo "${{ github.event.client_payload.triggered_by }}" | cut -d'/' -f2 | cut -d',' -f1)
+          else
+            REPO_NAME=${{ github.event.inputs.repository }}
+          fi
           echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
 
       - name: Checkout GitHub Action
@@ -45,11 +53,11 @@ jobs:
           if [ "${{ env.REPO_NAME }}" = "ctk-functions" ]; then
             docker build . \
               --build-arg AZURE_BLOB_SIGNATURES_CONNECTION_STRING="${{ secrets.AZURE_BLOB_SIGNATURES_CONNECTION_STRING }}" \
-              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest \
               -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:sha-${{ env.SHA }}
           else
             docker build . \
-              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
+              -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest \
               -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:sha-${{ env.SHA }}
           fi
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.REPO_NAME }}:latest
@@ -71,6 +79,11 @@ jobs:
           CLOAI_MODEL: sonnet-3.5-v2
           LANGUAGE_TOOL_URL: http://languagetool:8010/v2
           REDCAP_API_TOKEN: unused
+          POSTGRES_USER: unused
+          POSTGRES_PASSWORD: unused
+          POSTGRES_DATABASE: unused
+          POSTGRES_PORT: 5432
+          POSTGRES_HOST: unused
       cloai-service:
         image: cliniciantoolkit.azurecr.io/cloai-service:latest
         credentials:
@@ -119,7 +132,7 @@ jobs:
       - name: Initialize PostgreSQL
         env:
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        run: psql -h localhost -U ${POSTGRES_USER} -d ctk -f ./e2e/init.sql
+        run: psql -h localhost -U ${POSTGRES_USER} -d ctk -f ./e2e/init.psql
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -195,7 +208,7 @@ jobs:
       - name: Deploy cloai-service
         uses: azure/container-apps-deploy-action@8dff69dac3367c32ceb2690d8f13adbeab462703
         with:
-          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-cloai-service:${{ env.CLOAI_SERVICE_SHA }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/cloai-service:${{ env.CLOAI_SERVICE_SHA }}
           containerAppName: ca-cloai-service
           containerAppEnvironment: cae-ctk
           resourceGroup: ClinicianToolkit

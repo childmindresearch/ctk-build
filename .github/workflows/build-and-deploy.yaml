@@ -1,4 +1,6 @@
 name: Build, e2e, and deploy
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:

@@ -173,7 +173,7 @@ jobs:
           echo "CLOAI_SERVICE_SHA=$CLOAI_SERVICE_SHA" >> $GITHUB_ENV
 
       - name: Deploy CTK-Functions
-        uses: azure/container-apps-deploy-action@v1
+        uses: azure/container-apps-deploy-action@8dff69dac3367c32ceb2690d8f13adbeab462703
         with:
           imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-functions:${{ env.CTK_FUNCTIONS_SHA }}
           containerAppName: ca-ctk-functions-py
@@ -183,7 +183,7 @@ jobs:
           disableTelemetry: 'true'
 
       - name: Deploy CTK-Webapp
-        uses: azure/container-apps-deploy-action@v1
+        uses: azure/container-apps-deploy-action@8dff69dac3367c32ceb2690d8f13adbeab462703
         with:
           imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-webapp:${{ env.CTK_WEBAPP_SHA }}
           containerAppName: ca-ctk-webapp
@@ -193,7 +193,7 @@ jobs:
           disableTelemetry: 'true'
 
       - name: Deploy cloai-service
-        uses: azure/container-apps-deploy-action@v1
+        uses: azure/container-apps-deploy-action@8dff69dac3367c32ceb2690d8f13adbeab462703
         with:
           imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/ctk-cloai-service:${{ env.CLOAI_SERVICE_SHA }}
           containerAppName: ca-cloai-service

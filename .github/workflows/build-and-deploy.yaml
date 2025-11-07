@@ -15,6 +15,7 @@ env:
   POSTGRES_HOST: localhost
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: password
+  LANGUAGETOOL_URL: http://languagetool:8010
   POSTGRES_DB: ctk
   POSTGRES_PORT: 5432
   POSTGRES_SSL: false
